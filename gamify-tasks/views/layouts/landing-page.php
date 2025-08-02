@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameLife - Gamify Your Daily Tasks</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1f2937;
+            --bg-secondary: #111827;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --border-color: #374151;
+        }
+
+        [data-theme="green"] {
+            --primary-color: #10b981;
+            --primary-dark: #059669;
+        }
+
+        [data-theme="purple"] {
+            --primary-color: #8b5cf6;
+            --primary-dark: #7c3aed;
+        }
+
+        [data-theme="red"] {
+            --primary-color: #ef4444;
+            --primary-dark: #dc2626;
+        }
+
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .bg-primary { background-color: var(--bg-primary); }
+        .bg-secondary { background-color: var(--bg-secondary); }
+        .text-primary { color: var(--text-primary); }
+        .text-secondary { color: var(--text-secondary); }
+        .border-custom { border-color: var(--border-color); }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .gradient-hero {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        }
+
+        .feature-card {
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            border-color: var(--primary-color);
+        }
+
+        [data-theme="dark"] .feature-card {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        [data-theme="dark"] .feature-card:hover {
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+
+        .stat-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin: 0 auto 16px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            border: 3px solid rgba(255,255,255,0.2);
+        }
+
+        .navbar {
+            background-color: var(--bg-primary);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--border-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        [data-theme="dark"] .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .theme-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
+
+        .theme-btn:hover {
+            border-color: var(--text-primary);
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+        }
+
+        .theme-btn.active {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            transform: scale(1.05);
+        }
+
+        .screenshot-mockup {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            transition: all 0.3s ease;
+        }
+
+        .screenshot-mockup:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.18);
+            border-color: var(--primary-color);
+        }
+
+        [data-theme="dark"] .screenshot-mockup {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        [data-theme="dark"] .screenshot-mockup:hover {
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        .mobile-menu {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu.show {
+                display: block;
+            }
+        }
+
+        .scroll-smooth {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="scroll-smooth">
+    <!-- Navigation -->
+    <nav class="navbar fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 btn-primary rounded-xl flex items-center justify-center shadow-lg border-2 border-white border-opacity-20">
+                        <i class="fas fa-gamepad text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold text-primary">GameLife</span>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features" class="text-secondary hover:text-primary transition-colors">Features</a>
+                    <a href="#stats" class="text-secondary hover:text-primary transition-colors">Life Stats</a>
+                    <a href="#screenshots" class="text-secondary hover:text-primary transition-colors">Screenshots</a>
+                    <a href="#pricing" class="text-secondary hover:text-primary transition-colors hidden">Pricing</a>
+                </div>
+
+                <!-- Theme Controls -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <!-- Theme Colors -->
+                    <div class="flex space-x-2">
+                        <div class="theme-btn bg-blue-500 active" onclick="setTheme('blue')" title="Blue Theme"></div>
+                        <div class="theme-btn bg-green-500" onclick="setTheme('green')" title="Green Theme"></div>
+                        <div class="theme-btn bg-purple-500" onclick="setTheme('purple')" title="Purple Theme"></div>
+                        <div class="theme-btn bg-red-500" onclick="setTheme('red')" title="Red Theme"></div>
+                    </div>
+                    
+                    <!-- Dark Mode Toggle -->
+                    <button id="darkModeToggle" class="p-2 rounded-lg hover:bg-secondary transition-colors">
+                        <i class="fas fa-moon text-secondary"></i>
+                    </button>
+                    
+                    <!-- CTA Buttons -->
+                    <a href="#demo" class="btn-primary px-4 py-2 rounded-lg transition-colors">Try Demo</a>
+                    <a href="#signup" class="bg-secondary text-primary px-4 py-2 rounded-lg border border-custom hover:bg-primary hover:text-white transition-colors">Sign Up</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-secondary">
+                    <i class="fas fa-bars text-primary"></i>
+                </button>
+            </div>
+
+                <!-- Mobile Menu -->
+            <div id="mobileMenu" class="mobile-menu md:hidden bg-primary border-t border-custom shadow-lg">
+                <div class="px-2 pt-2 pb-3 space-y-1 bg-secondary border-2 border-custom rounded-t-lg mt-2 mx-2">
+                    <a href="#features" class="block px-3 py-2 text-secondary hover:text-primary">Features</a>
+                    <a href="#stats" class="block px-3 py-2 text-secondary hover:text-primary">Life Stats</a>
+                    <a href="#screenshots" class="block px-3 py-2 text-secondary hover:text-primary">Screenshots</a>
+                    <a href="#pricing" class="block px-3 py-2 text-secondary hover:text-primary">Pricing</a>
+                    <div class="flex items-center space-x-2 px-3 py-2">
+                        <div class="theme-btn bg-blue-500 active" onclick="setTheme('blue')"></div>
+                        <div class="theme-btn bg-green-500" onclick="setTheme('green')"></div>
+                        <div class="theme-btn bg-purple-500" onclick="setTheme('purple')"></div>
+                        <div class="theme-btn bg-red-500" onclick="setTheme('red')"></div>
+                        <button id="darkModeToggleMobile" class="p-2 rounded-lg hover:bg-secondary">
+                            <i class="fas fa-moon text-secondary"></i>
+                        </button>
+                    </div>
+                    <a href="#demo" class="block btn-primary px-3 py-2 rounded-lg text-center">Try Demo</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="gradient-hero pt-24 pb-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
+                    Level Up Your Life
+                </h1>
+                <p class="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+                    Transform your daily tasks into an epic adventure. Track your progress, unlock achievements, and watch your life stats grow as you complete quests and build better habits.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="#demo" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+                        Start Your Journey
+                    </a>
+                    <a href="#features" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+                        Explore Features
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hero Stats Preview -->
+            <div class="mt-16 grid grid-cols-2 md:grid-cols-5 gap-4 max-w-4xl mx-auto">
+                <div class="text-center">
+                    <div class="stat-circle bg-red-500">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 class="text-white font-semibold">Physical Health</h3>
+                    <div class="text-blue-100">Level 12</div>
+                </div>
+                <div class="text-center">
+                    <div class="stat-circle bg-purple-500">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h3 class="text-white font-semibold">Creativity</h3>
+                    <div class="text-blue-100">Level 8</div>
+                </div>
+                <div class="text-center">
+                    <div class="stat-circle bg-blue-500">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="text-white font-semibold">Knowledge</h3>
+                    <div class="text-blue-100">Level 15</div>
+                </div>
+                <div class="text-center">
+                    <div class="stat-circle bg-yellow-500">
+                        <i class="fas fa-smile"></i>
+                    </div>
+                    <h3 class="text-white font-semibold">Happiness</h3>
+                    <div class="text-blue-100">Level 10</div>
+                </div>
+                <div class="text-center">
+                    <div class="stat-circle bg-green-500">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h3 class="text-white font-semibold">Money</h3>
+                    <div class="text-blue-100">Level 6</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-primary">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-primary mb-4">Game-Changing Features</h2>
+                <p class="text-xl text-secondary max-w-3xl mx-auto">
+                    Every feature designed to make your daily life more engaging and rewarding
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Levels & XP -->
+                <div class="feature-card p-6 rounded-xl">
+                    <div class="w-12 h-12 btn-primary rounded-lg flex items-center justify-center mb-4 shadow-lg border-2 border-white border-opacity-20">
+                        <i class="fas fa-star text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary mb-3">Levels & Experience Points</h3>
+                    <p class="text-secondary">Gain XP for every completed task and watch your character level up across different life areas.</p>
+                </div>
+
+                <!-- Achievements -->
+                <div class="feature-card p-6 rounded-xl">
+                    <div class="w-12 h-12 btn-primary rounded-lg flex items-center justify-center mb-4 shadow-lg border-2 border-white border-opacity-20">
+                        <i class="fas fa-trophy text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary mb-3">Achievements & Badges</h3>
+                    <p class="text-secondary">Unlock special badges and achievements for reaching milestones and completing challenges.</p>
+                </div>
+
+                <!-- Quests -->
+                <div class="feature-card p-6 rounded-xl">
+                    <div class="w-12 h-12 btn-primary rounded-lg flex items-center justify-center mb-4 shadow-lg border-2 border-white border-opacity-20">
+                        <i class="fas fa-scroll text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary mb-3">Quests & Storylines</h3>
+                    <p class="text-secondary">Embark on epic quests with engaging storylines that make productivity feel like an adventure.</p>
+                </div>
+
+                <!-- Leaderboards -->
+                <div class="feature-card p-6 rounded-xl">
+                    <div class="w-12 h-12 btn-primary rounded-lg flex items-center justify-center mb-4 shadow-lg border-2 border-white border-opacity-20">
+                        <i class="fas fa-ranking-star text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary mb-3">Leaderboards</h3>
+                    <p class="text-secondary">Compete with friends and community members on weekly and monthly leaderboards.</p>
+                </div>
+
+                <!-- Daily Streaks -->
+                <div class="feature-card p-6 rounded-xl">
+                    <div class="w-12 h-12 btn-primary rounded-lg flex items-center justify-center mb-4 shadow-lg border-2 border-white border-opacity-20">
+                        <i class="fas fa-fire text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary mb-3">Daily Streaks</h3>
+                    <p class="text-secondary">Build momentum with daily streaks and earn bonus rewards for consistency.</p>
+                </div>
+
+                <!-- Virtual Shop -->
+                <div class="feature-card p-6 rounded-xl">
+                    <div class="w-12 h-12 btn-primary rounded-lg flex items-center justify-center mb-4 shadow-lg border-2 border-white border-opacity-20">
+                        <i class="fas fa-shopping-cart text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary mb-3">Virtual Currency & Shop</h3>
+                    <p class="text-secondary">Earn coins by completing tasks and spend them on rewards, customizations, and power-ups.</p>
+                </div>
+
+                <!-- Journaling -->
+                <div class="feature-card p-6 rounded-xl">
+                    <div class="w-12 h-12 btn-primary rounded-lg flex items-center justify-center mb-4 shadow-lg border-2 border-white border-opacity-20">
+                        <i class="fas fa-book text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary mb-3">Smart Journaling</h3>
+                    <p class="text-secondary">Reflect on your progress with built-in journaling tools and mood tracking.</p>
+                </div>
+
+                <!-- Goal Setting -->
+                <div class="feature-card p-6 rounded-xl">
+                    <div class="w-12 h-12 btn-primary rounded-lg flex items-center justify-center mb-4 shadow-lg border-2 border-white border-opacity-20">
+                        <i class="fas fa-bullseye text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary mb-3">Goal Setting</h3>
+                    <p class="text-secondary">Set SMART goals and break them down into actionable quests with clear rewards.</p>
+                </div>
+
+                <!-- Habit Tracker -->
+                <div class="feature-card p-6 rounded-xl">
+                    <div class="w-12 h-12 btn-primary rounded-lg flex items-center justify-center mb-4 shadow-lg border-2 border-white border-opacity-20">
+                        <i class="fas fa-repeat text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary mb-3">Habit Tracker</h3>
+                    <p class="text-secondary">Build lasting habits with our intelligent tracking system and streak mechanics.</p>
+                </div>
+
+                <!-- Social Features -->
+                <div class="feature-card p-6 rounded-xl">
+                    <div class="w-12 h-12 btn-primary rounded-lg flex items-center justify-center mb-4 shadow-lg border-2 border-white border-opacity-20">
+                        <i class="fas fa-users text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary mb-3">Social Features</h3>
+                    <p class="text-secondary">Connect with friends, join guilds, and participate in community challenges.</p>
+                </div>
+
+                <!-- Reminders -->
+                <div class="feature-card p-6 rounded-xl">
+                    <div class="w-12 h-12 btn-primary rounded-lg flex items-center justify-center mb-4 shadow-lg border-2 border-white border-opacity-20">
+                        <i class="fas fa-bell text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary mb-3">Smart Reminders</h3>
+                    <p class="text-secondary">Never miss a quest with intelligent reminders and notification system.</p>
+                </div>
+
+                <!-- Analytics -->
+                <div class="feature-card p-6 rounded-xl">
+                    <div class="w-12 h-12 btn-primary rounded-lg flex items-center justify-center mb-4 shadow-lg border-2 border-white border-opacity-20">
+                        <i class="fas fa-chart-line text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary mb-3">Progress Analytics</h3>
+                    <p class="text-secondary">Track your growth with detailed analytics and beautiful progress visualizations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Life Stats Section -->
+    <section id="stats" class="py-20 bg-secondary">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-primary mb-4">Track Your Life Stats</h2>
+                <p class="text-xl text-secondary max-w-3xl mx-auto">
+                    Monitor your growth across five key areas of life. Each completed task contributes to specific stats based on its category.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                <!-- Physical Health -->
+                <div class="feature-card p-6 rounded-xl text-center">
+                    <div class="stat-circle bg-red-500 mb-4">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-primary mb-2">Physical Health</h3>
+                    <div class="text-2xl font-bold text-red-500 mb-2">Level 12</div>
+                    <div class="w-full bg-gray-200 rounded-full h-3 mb-3 shadow-inner border border-gray-300">
+                        <div class="bg-red-500 h-3 rounded-full shadow-sm" style="width: 65%"></div>
+                    </div>
+                    <p class="text-sm text-secondary">Exercise, nutrition, sleep tracking</p>
+                </div>
+
+                <!-- Creativity -->
+                <div class="feature-card p-6 rounded-xl text-center">
+                    <div class="stat-circle bg-purple-500 mb-4">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-primary mb-2">Creativity</h3>
+                    <div class="text-2xl font-bold text-purple-500 mb-2">Level 8</div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                        <div class="bg-purple-500 h-2 rounded-full" style="width: 40%"></div>
+                    </div>
+                    <p class="text-sm text-secondary">Art, music, writing, design</p>
+                </div>
+
+                <!-- Knowledge -->
+                <div class="feature-card p-6 rounded-xl text-center">
+                    <div class="stat-circle bg-blue-500 mb-4">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-primary mb-2">Knowledge</h3>
+                    <div class="text-2xl font-bold text-blue-500 mb-2">Level 15</div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                        <div class="bg-blue-500 h-2 rounded-full" style="width: 75%"></div>
+                    </div>
+                    <p class="text-sm text-secondary">Learning, reading, courses</p>
+                </div>
+
+                <!-- Happiness -->
+                <div class="feature-card p-6 rounded-xl text-center">
+                    <div class="stat-circle bg-yellow-500 mb-4">
+                        <i class="fas fa-smile"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-primary mb-2">Happiness</h3>
+                    <div class="text-2xl font-bold text-yellow-500 mb-2">Level 10</div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 50%"></div>
+                    </div>
+                    <p class="text-sm text-secondary">Social, hobbies, mindfulness</p>
+                </div>
+
+                <!-- Money -->
+                <div class="feature-card p-6 rounded-xl text-center">
+                    <div class="stat-circle bg-green-500 mb-4">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-primary mb-2">Money</h3>
+                    <div class="text-2xl font-bold text-green-500 mb-2">Level 6</div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: 30%"></div>
+                    </div>
+                    <p class="text-sm text-secondary">Career, investments, side-hustles</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screenshots Section -->
+    <section id="screenshots" class="py-20 bg-primary">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-primary mb-4">See GameLife in Action</h2>
+                <p class="text-xl text-secondary max-w-3xl mx-auto">
+                    Explore the beautiful, game-inspired interface designed to make productivity addictive
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Dashboard Screenshot -->
+                <div class="screenshot-mockup">
+                    <div class="bg-gray-300 h-48 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-tachometer-alt text-6xl text-gray-500"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-primary mb-2">Dashboard Overview</h3>
+                    <p class="text-secondary">Your command center with all stats, streaks, and daily quests at a glance</p>
+                </div>
+
+                <!-- Task Management -->
+                <div class="screenshot-mockup">
+                    <div class="bg-gray-300 h-48 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-tasks text-6xl text-gray-500"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-primary mb-2">Quest Management</h3>
+                    <p class="text-secondary">Organize your tasks as epic quests with XP rewards and difficulty levels</p>
+                </div>
+
+                <!-- Achievements -->
+                <div class="screenshot-mockup">
+                    <div class="bg-gray-300 h-48 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-trophy text-6xl text-gray-500"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-primary mb-2">Achievement Gallery</h3>
+                    <p class="text-secondary">Showcase your accomplishments with beautiful badges and trophies</p>
+                </div>
+
+                <!-- Habit Tracker -->
+                <div class="screenshot-mockup">
+                    <div class="bg-gray-300 h-48 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-repeat text-6xl text-gray-500"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-primary mb-2">Habit Tracking</h3>
+                    <p class="text-secondary">Build lasting habits with visual streaks and progress indicators</p>
+                </div>
+
+                <!-- Social Features -->
+                <div class="screenshot-mockup">
+                    <div class="bg-gray-300 h-48 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-users text-6xl text-gray-500"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-primary mb-2">Social Hub</h3>
+                    <p class="text-secondary">Connect with friends, join guilds, and compete on leaderboards</p>
+                </div>
+
+                <!-- Analytics -->
+                <div class="screenshot-mockup">
+                    <div class="bg-gray-300 h-48 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-chart-line text-6xl text-gray-500"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-primary mb-2">Progress Analytics</h3>
+                    <p class="text-secondary">Beautiful charts and graphs showing your growth over time</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 bg-secondary hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-primary mb-4">Choose Your Adventure</h2>
+                <p class="text-xl text-secondary max-w-3xl mx-auto">
+                    Start your journey for free, upgrade when you're ready to unlock the full potential
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- Free Plan -->
+                <div class="feature-card p-8 rounded-xl">
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold text-primary mb-2">Adventurer</h3>
+                        <div class="text-4xl font-bold text-primary mb-2">Free</div>
+                        <p class="text-secondary">Perfect for getting started</p>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Basic task management</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>5 Life stats tracking</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Basic achievements</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Daily streaks</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Mobile app</li>
+                    </ul>
+                    <button class="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                        Get Started Free
+                    </button>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="feature-card p-8 rounded-xl relative border-2 border-blue-500">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                        Most Popular
+                    </div>
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold text-primary mb-2">Hero</h3>
+                        <div class="text-4xl font-bold text-primary mb-2">$9<span class="text-lg">/month</span></div>
+                        <p class="text-secondary">For serious life gamers</p>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Everything in Adventurer</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Unlimited quests & habits</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Advanced analytics</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Custom storylines</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Social features & guilds</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Priority support</li>
+                    </ul>
+                    <button class="w-full btn-primary py-3 rounded-lg font-semibold transition-colors">
+                        Start 14-Day Trial
+                    </button>
+                </div>
+
+                <!-- Premium Plan -->
+                <div class="feature-card p-8 rounded-xl">
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold text-primary mb-2">Legend</h3>
+                        <div class="text-4xl font-bold text-primary mb-2">$19<span class="text-lg">/month</span></div>
+                        <p class="text-secondary">Ultimate productivity mastery</p>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Everything in Hero</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>AI-powered quest suggestions</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Advanced customization</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Team & family accounts</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Export & integrations</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>1-on-1 coaching calls</li>
+                    </ul>
+                    <button class="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                        Go Legend
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="gradient-hero py-20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
+                Ready to Transform Your Life?
+            </h2>
+            <p class="text-xl text-blue-100 mb-8">
+                Join thousands of players who have already leveled up their productivity and achieved their goals through gamification.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                <a href="#signup" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-50 transition-colors">
+                    Start Your Free Journey
+                </a>
+                <a href="#demo" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors">
+                    Try Interactive Demo
+                </a>
+            </div>
+            <div class="flex items-center justify-center space-x-8 text-blue-100">
+                <div class="flex items-center">
+                    <i class="fas fa-check mr-2"></i>
+                    <span>No credit card required</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-check mr-2"></i>
+                    <span>14-day free trial</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-check mr-2"></i>
+                    <span>Cancel anytime</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-gamepad text-white text-sm"></i>
+                        </div>
+                        <span class="text-xl font-bold text-white">GameLife</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        Transforming productivity through gamification. Level up your life, one quest at a time.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Product -->
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Product</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#features" class="text-gray-400 hover:text-white transition-colors">Features</a></li>
+                        <li><a href="#pricing" class="text-gray-400 hover:text-white transition-colors">Pricing</a></li>
+                        <li><a href="#demo" class="text-gray-400 hover:text-white transition-colors">Demo</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Mobile App</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">API</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Support</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Community</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Status</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Updates</a></li>
+                    </ul>
+                </div>
+
+                <!-- Company -->
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Company</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">About</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Blog</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Careers</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Press</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Partners</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm">
+                    © 2024 GameLife. All rights reserved.
+                </p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Privacy Policy</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Terms of Service</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Theme Management
+        let currentTheme = 'blue';
+        let isDarkMode = false;
+
+        function setTheme(theme) {
+            currentTheme = theme;
+            document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : theme);
+            
+            // Update active theme button
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.theme-btn.bg-${theme}-500`).classList.add('active');
+            
+            // Save to localStorage
+            localStorage.setItem('gamelife-theme', theme);
+        }
+
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : currentTheme);
+            
+            // Update dark mode button icons
+            const darkModeIcons = document.querySelectorAll('#darkModeToggle i, #darkModeToggleMobile i');
+            darkModeIcons.forEach(icon => {
+                if (isDarkMode) {
+                    icon.className = 'fas fa-sun text-secondary';
+                } else {
+                    icon.className = 'fas fa-moon text-secondary';
+                }
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('gamelife-dark-mode', isDarkMode);
+        }
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('show');
+        }
+
+        // Smooth Scrolling for Navigation Links
+        function setupSmoothScrolling() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                        
+                        // Close mobile menu if open
+                        document.getElementById('mobileMenu').classList.remove('show');
+                    }
+                });
+            });
+        }
+
+        // Navbar Background on Scroll
+        function setupNavbarScroll() {
+            const navbar = document.querySelector('.navbar');
+            let lastScrollY = window.scrollY;
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.style.backgroundColor = isDarkMode ? 'rgba(31, 41, 55, 0.95)' : 'rgba(248, 250, 252, 0.95)';
+                    navbar.style.backdropFilter = 'blur(10px)';
+                } else {
+                    navbar.style.backgroundColor = isDarkMode ? 'var(--bg-primary)' : 'var(--bg-primary)';
+                    navbar.style.backdropFilter = 'none';
+                }
+            });
+        }
+
+        // Intersection Observer for Animations
+        function setupAnimations() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe feature cards
+            document.querySelectorAll('.feature-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        }
+
+        // Stats Counter Animation
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-circle + h3 + div');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const counter = entry.target;
+                        const target = parseInt(counter.textContent.match(/\d+/)[0]);
+                        const duration = 2000;
+                        const increment = target / (duration / 16);
+                        let current = 0;
+
+                        const timer = setInterval(() => {
+                            current += increment;
+                            if (current >= target) {
+                                current = target;
+                                clearInterval(timer);
+                            }
+                            counter.textContent = `Level ${Math.floor(current)}`;
+                        }, 16);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            counters.forEach(counter => observer.observe(counter));
+        }
+
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved preferences
+            const savedTheme = localStorage.getItem('gamelife-theme') || 'blue';
+            const savedDarkMode = localStorage.getItem('gamelife-dark-mode') === 'true';
+            
+            currentTheme = savedTheme;
+            isDarkMode = savedDarkMode;
+            
+            setTheme(savedTheme);
+            if (isDarkMode) {
+                toggleDarkMode();
+            }
+
+            // Setup event listeners
+            document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+            document.getElementById('darkModeToggleMobile').addEventListener('click', toggleDarkMode);
+            document.getElementById('mobileMenuBtn').addEventListener('click', toggleMobileMenu);
+
+            // Initialize features
+            setupSmoothScrolling();
+            setupNavbarScroll();
+            setupAnimations();
+            animateCounters();
+
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(e) {
+                const mobileMenu = document.getElementById('mobileMenu');
+                const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+                
+                if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                    mobileMenu.classList.remove('show');
+                }
+            });
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (window.innerWidth >= 768) {
+                mobileMenu.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

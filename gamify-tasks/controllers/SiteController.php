@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Users;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -9,6 +10,7 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\User;
 
 class SiteController extends Controller
 {
@@ -54,6 +56,15 @@ class SiteController extends Controller
         ];
     }
 
+    public function beforeAction($action) {
+        // print_r($action->id);
+        $allowedActions = ['index', 'login', 'contact', 'about', 'demo'];
+        if(Yii::$app->user->isGuest && !in_array($action->id, $allowedActions)) {
+            $this->redirect('./index');
+        }
+        return parent::beforeAction($action);
+    }
+
     /**
      * Displays homepage.
      *
@@ -61,6 +72,9 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+        if(Yii::$app->user->isGuest) {
+            $this->layout = 'landing-page';
+        }
         return $this->render('index');
     }
 
@@ -125,4 +139,14 @@ class SiteController extends Controller
     {
         return $this->render('about');
     }
+
+    public function actionDemo() {
+        $this->layout = null;
+        return $this->renderAjax('/layouts/demo');
+    }
+
+    //   function actionError() {
+    //     $this->layout = 'error';
+    //     return true;
+    // }
 }
